@@ -199,28 +199,27 @@ def crawler(url):
         return NOW(a)
 
 if '__main__' == __name__:
-    websites = [#'https://api.ftvnews.com.tw/api/FtvGetNews?Cate=POL&Page=1&Sp=18',
-                #'https://www.chinatimes.com/politic/PageListTotal/?page=1&_=1582217556616',
-                #'https://news.pts.org.tw/subcategory/9',
-                #'https://www.cna.com.tw/cna2018api/api/simplelist/categorycode/aipl/pageidx/1/',
-                #'https://news.ltn.com.tw/ajax/breakingnews/politics/1',
-                #'https://news.pchome.com.tw/cat/politics/hot/1',
+    websites = ['https://api.ftvnews.com.tw/api/FtvGetNews?Cate=POL&Page=1&Sp=18',
+                'https://www.chinatimes.com/politic/PageListTotal/?page=1&_=1582217556616',
+                'https://news.pts.org.tw/subcategory/9',
+                'https://www.cna.com.tw/cna2018api/api/simplelist/categorycode/aipl/pageidx/1/',
+                'https://news.ltn.com.tw/ajax/breakingnews/politics/1',
+                'https://news.pchome.com.tw/cat/politics/hot/1',
                 'https://www.nownews.com/cat/politics/page/1/']
     for i, website in enumerate(websites):
         for element in crawler(website):
             name = element['filename']
             context = element['article']
             html = element['raw_data']
-            print(name)
-            #if not os.path.exists('articles_politics'):
-            #    os.mkdir('articles_politics')
-            #if not os.path.exists(f'articles_politics/{i+1}'):
-            #    os.mkdir(f'articles_politics/{i+1}')
-            #with open(f'./articles_politics/{i+1}/{i+1}-{name}', 'w') as f:
-            #    f.write(context)
-            #if not os.path.exists('htmls_politics'):
-            #    os.mkdir('htmls_politics')
-            #if not os.path.exists(f'htmls_politics/{i+1}'):
-            #    os.mkdir(f'htmls_politics/{i+1}')
-            #with open(f'./htmls_politics/{i+1}/{i+1}-{name}.html', 'w') as f:
-            #    f.write(html)
+            if not os.path.exists('articles_politics'):
+                os.mkdir('articles_politics')
+            if not os.path.exists(f'articles_politics/{i+1}'):
+                os.mkdir(f'articles_politics/{i+1}')
+            with open(f'./articles_politics/{i+1}/{i+1}-{name}', 'w') as f:
+                f.write(context)
+            if not os.path.exists('htmls_politics'):
+                os.mkdir('htmls_politics')
+            if not os.path.exists(f'htmls_politics/{i+1}'):
+                os.mkdir(f'htmls_politics/{i+1}')
+            with open(f'./htmls_politics/{i+1}/{i+1}-{name}.html', 'w') as f:
+                f.write(html)
