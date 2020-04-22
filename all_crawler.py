@@ -1,6 +1,7 @@
 import requests
 from bs4 import BeautifulSoup
 import re
+import sys
 import json
 import os
 import moment
@@ -199,27 +200,52 @@ def crawler(url):
         return NOW(a)
 
 if '__main__' == __name__:
-    websites = ['https://api.ftvnews.com.tw/api/FtvGetNews?Cate=POL&Page=1&Sp=18',
-                'https://www.chinatimes.com/politic/PageListTotal/?page=1&_=1582217556616',
-                'https://news.pts.org.tw/subcategory/9',
-                'https://www.cna.com.tw/cna2018api/api/simplelist/categorycode/aipl/pageidx/1/',
-                'https://news.ltn.com.tw/ajax/breakingnews/politics/1',
-                'https://news.pchome.com.tw/cat/politics/hot/1',
-                'https://www.nownews.com/cat/politics/page/1/']
+    if sys.argv[1] == 'politic':
+        websites = ['https://api.ftvnews.com.tw/api/FtvGetNews?Cate=POL&Page=1&Sp=18',
+                    'https://www.chinatimes.com/politic/PageListTotal/?page=1&_=1582217556616',
+                    'https://news.pts.org.tw/subcategory/9',
+                    'https://www.cna.com.tw/cna2018api/api/simplelist/categorycode/aipl/pageidx/1/',
+                    'https://news.ltn.com.tw/ajax/breakingnews/politics/1',
+                    'https://news.pchome.com.tw/cat/politics/hot/1',
+                    'https://www.nownews.com/cat/politics/page/1/']
+    elif sys.argv[1] == 'finance':
+        websites = ['https://api.ftvnews.com.tw/api/FtvGetNews?Cate=FIN&Page=1&Sp=18',
+                    'https://www.chinatimes.com/money/PageListTotal/?page=1&_=1582217556616',
+                    'https://news.pts.org.tw/subcategory/9',
+                    'https://www.cna.com.tw/cna2018api/api/simplelist/categorycode/aie/pageidx/1/',
+                    '',
+                    'https://news.pchome.com.tw/cat/finance/hot/1',
+                    'https://www.nownews.com/cat/finance/page/1/']
+    elif sys.argv[1] == 'society':
+        websites = ['https://api.ftvnews.com.tw/api/FtvGetNews?Cate=SOC&Page=2&Sp=18',
+                    'https://www.chinatimes.com/society/PageListTotal/?page=1&_=1582217556616',
+                    'https://news.pts.org.tw/subcategory/14',
+                    'https://www.cna.com.tw/cna2018api/api/simplelist/categorycode/asoc/pageidx/1/',
+                    'https://news.ltn.com.tw/ajax/breakingnews/society/1',
+                    'https://news.pchome.com.tw/cat/society/hot/1',
+                    'https://www.nownews.com/cat/society/page/1/']
+    elif sys.argv[1] == 'internation':
+        websites = ['https://api.ftvnews.com.tw/api/FtvGetNews?Cate=INT&Page=1&Sp=18',
+                    'https://www.chinatimes.com/world/PageListTotal/?page=1&_=1582217556616',
+                    'https://news.pts.org.tw/subcategory/11',
+                    'https://www.cna.com.tw/cna2018api/api/simplelist/categorycode/aopl/pageidx/1/',
+                    'https://news.ltn.com.tw/ajax/breakingnews/world/1',
+                    'https://news.pchome.com.tw/cat/internation/hot/1',
+                    'https://www.nownews.com/cat/global/page/1/']
     for i, website in enumerate(websites):
         for element in crawler(website):
             name = element['filename']
             context = element['article']
             html = element['raw_data']
-            if not os.path.exists('articles_politics'):
-                os.mkdir('articles_politics')
-            if not os.path.exists(f'articles_politics/{i+1}'):
-                os.mkdir(f'articles_politics/{i+1}')
-            with open(f'./articles_politics/{i+1}/{i+1}-{name}', 'w') as f:
+            if not os.path.exists(f'articles_{sys.argv[1]}'):
+                os.mkdir(f'articles_{sys.argv[1]}')
+            if not os.path.exists(f'articles_{sys.argv[1]}/{i+1}'):
+                os.mkdir(f'articles_{sys.argv[1]}/{i+1}')
+            with open(f'/home/aa0918358122/git/crawler/articles_{sys.argv[1]}/{i+1}/{i+1}-{name}', 'w') as f:
                 f.write(context)
-            if not os.path.exists('htmls_politics'):
-                os.mkdir('htmls_politics')
-            if not os.path.exists(f'htmls_politics/{i+1}'):
-                os.mkdir(f'htmls_politics/{i+1}')
-            with open(f'./htmls_politics/{i+1}/{i+1}-{name}.html', 'w') as f:
+            if not os.path.exists(f'htmls_{sys.argv[1]}'):
+                os.mkdir(f'htmls_{sys.argv[1]}')
+            if not os.path.exists(f'htmls_{sys.argv[1]}/{i+1}'):
+                os.mkdir(f'htmls_{sys.argv[1]}/{i+1}')
+            with open(f'/home/aa0918358122/git/crawler/htmls_{sys.argv[1]}/{i+1}/{i+1}-{name}.html', 'w') as f:
                 f.write(html)
