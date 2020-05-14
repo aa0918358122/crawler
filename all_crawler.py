@@ -159,26 +159,24 @@ def PChome(req):
 def NOW(req):
     # a = requests.get('https://www.nownews.com/cat/politics/page/1/')
     save_list = []
-    soup1 = BeautifulSoup(req.text, 'html.parser')
-    for link1 in soup1.find_all(class_='entry-title td-module-title'):
-        for link2 in link1.find_all(name='a'):
-            URL = link2.get('href')
-            name = re.findall('\d+', URL)
-            article_name = name[0] + '-' +name[1]
-            b = requests.get(URL)
-            soup2 = BeautifulSoup(b.text, 'html.parser')
-            tag = soup2.find(itemprop='articleBody')
-            article = ''
-            for link3 in tag.find_all(name='p'):
-                text = link3.getText()
-                article += text
-            article = re.sub(r'※.*', '', article)
-            article = re.sub(r'【.*?】.*|（編輯.*|￼', '', article)
-            save_dict = dict()
-            save_dict['filename'] = article_name
-            save_dict['article'] = article
-            save_dict['raw_data'] = b.text
-            save_list.append(save_dict)
+    data = eval(req.text)['data']['newsList']
+    for item in range(len(data)):
+        URL = data[item]['postUrl']
+        name = data[item]['id']
+        date = data[item]['newsDate'].replace('-', '')
+        article_name = date + '-' + name
+        b = requests.get('http://www.nownews.com' + URL)
+        soup = BeautifulSoup(b.text, 'html.parser')
+        tag = soup.find(class_='newsMsg')
+        article = tag.getText()
+        article = re.sub(r'※.*', '',  article)
+        article = re.sub(r'（圖／.*?）', '', article)
+        rticle = re.sub(r'【.*?】.*|（編輯.*', '', article)
+        save_dict = dict()
+        save_dict['filename'] = article_name
+        save_dict['article'] = article
+        save_dict['raw_data'] = b.text
+        save_list.append(save_dict)
     return save_list
 
 def crawler(url):
@@ -201,13 +199,14 @@ def crawler(url):
 
 if '__main__' == __name__:
     if sys.argv[1] == 'politic':
-        websites = ['https://api.ftvnews.com.tw/api/FtvGetNews?Cate=POL&Page=1&Sp=18',
-                    'https://www.chinatimes.com/politic/PageListTotal/?page=1&_=1582217556616',
-                    'https://news.pts.org.tw/subcategory/9',
-                    'https://www.cna.com.tw/cna2018api/api/simplelist/categorycode/aipl/pageidx/1/',
-                    'https://news.ltn.com.tw/ajax/breakingnews/politics/1',
-                    'https://news.pchome.com.tw/cat/politics/hot/1',
-                    'https://www.nownews.com/cat/politics/page/1/']
+        for number in range(1,9):
+            websites = ['https://api.ftvnews.com.tw/api/FtvGetNews?Cate=POL&Page=1&Sp=18',
+                        'https://www.chinatimes.com/politic/PageListTotal/?page=1&_=1582217556616',
+                        f'https://news.pts.org.tw/subcategory/{number}',
+                        'https://www.cna.com.tw/cna2018api/api/simplelist/categorycode/aipl/pageidx/1/',
+                        'https://news.ltn.com.tw/ajax/breakingnews/politics/1',
+                        'https://news.pchome.com.tw/cat/politics/hot/1',
+                        'https://www.nownews.com/nn-client/api/v1/cat/politics/']
     elif sys.argv[1] == 'finance':
         websites = ['https://api.ftvnews.com.tw/api/FtvGetNews?Cate=FIN&Page=1&Sp=18',
                     'https://www.chinatimes.com/money/PageListTotal/?page=1&_=1582217556616',
@@ -217,35 +216,37 @@ if '__main__' == __name__:
                     'https://news.pchome.com.tw/cat/finance/hot/1',
                     'https://www.nownews.com/cat/finance/page/1/']
     elif sys.argv[1] == 'society':
-        websites = ['https://api.ftvnews.com.tw/api/FtvGetNews?Cate=SOC&Page=2&Sp=18',
-                    'https://www.chinatimes.com/society/PageListTotal/?page=1&_=1582217556616',
-                    'https://news.pts.org.tw/subcategory/14',
-                    'https://www.cna.com.tw/cna2018api/api/simplelist/categorycode/asoc/pageidx/1/',
-                    'https://news.ltn.com.tw/ajax/breakingnews/society/1',
-                    'https://news.pchome.com.tw/cat/society/hot/1',
-                    'https://www.nownews.com/cat/society/page/1/']
+        for number in range(1,14):
+            websites = ['https://api.ftvnews.com.tw/api/FtvGetNews?Cate=SOC&Page=2&Sp=18',
+                        'https://www.chinatimes.com/society/PageListTotal/?page=1&_=1582217556616',
+                        f'https://news.pts.org.tw/subcategory/{number}',
+                        'https://www.cna.com.tw/cna2018api/api/simplelist/categorycode/asoc/pageidx/1/',
+                        'https://news.ltn.com.tw/ajax/breakingnews/society/1',
+                        'https://news.pchome.com.tw/cat/society/hot/1',
+                        'https://www.nownews.com/cat/society/page/1/']
     elif sys.argv[1] == 'internation':
-        websites = ['https://api.ftvnews.com.tw/api/FtvGetNews?Cate=INT&Page=1&Sp=18',
-                    'https://www.chinatimes.com/world/PageListTotal/?page=1&_=1582217556616',
-                    'https://news.pts.org.tw/subcategory/11',
-                    'https://www.cna.com.tw/cna2018api/api/simplelist/categorycode/aopl/pageidx/1/',
-                    'https://news.ltn.com.tw/ajax/breakingnews/world/1',
-                    'https://news.pchome.com.tw/cat/internation/hot/1',
-                    'https://www.nownews.com/cat/global/page/1/']
+        for number in range(1,11):
+            websites = ['https://api.ftvnews.com.tw/api/FtvGetNews?Cate=INT&Page=1&Sp=18',
+                        'https://www.chinatimes.com/world/PageListTotal/?page=1&_=1582217556616',
+                        f'https://news.pts.org.tw/subcategory/{number}',
+                        'https://www.cna.com.tw/cna2018api/api/simplelist/categorycode/aopl/pageidx/1/',
+                        'https://news.ltn.com.tw/ajax/breakingnews/world/1',
+                        'https://news.pchome.com.tw/cat/internation/hot/1',
+                        'https://www.nownews.com/cat/global/page/1/']
     for i, website in enumerate(websites):
         for element in crawler(website):
             name = element['filename']
             context = element['article']
             html = element['raw_data']
             if not os.path.exists(f'articles_{sys.argv[1]}'):
-                os.mkdir(f'articles_{sys.argv[1]}')
+                os.mkdir(f'./articles_{sys.argv[1]}')
             if not os.path.exists(f'articles_{sys.argv[1]}/{i+1}'):
-                os.mkdir(f'articles_{sys.argv[1]}/{i+1}')
+                os.mkdir(f'./articles_{sys.argv[1]}/{i+1}')
             with open(f'/home/aa0918358122/git/crawler/articles_{sys.argv[1]}/{i+1}/{i+1}-{name}', 'w') as f:
                 f.write(context)
             if not os.path.exists(f'htmls_{sys.argv[1]}'):
-                os.mkdir(f'htmls_{sys.argv[1]}')
+                os.mkdir(f'./htmls_{sys.argv[1]}')
             if not os.path.exists(f'htmls_{sys.argv[1]}/{i+1}'):
-                os.mkdir(f'htmls_{sys.argv[1]}/{i+1}')
+                os.mkdir(f'./htmls_{sys.argv[1]}/{i+1}')
             with open(f'/home/aa0918358122/git/crawler/htmls_{sys.argv[1]}/{i+1}/{i+1}-{name}.html', 'w') as f:
                 f.write(html)
